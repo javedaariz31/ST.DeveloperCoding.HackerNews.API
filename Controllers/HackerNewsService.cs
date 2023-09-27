@@ -29,7 +29,6 @@ namespace ST.DeveloperCoding.HackerNews.API.Controllers
                 var response = await _httpClient.GetAsync($"{BaseUrl}/item/{storyId}.json");
                 var storyJsons = await response.Content.ReadAsStringAsync();
                 var storyinfo = JsonConvert.DeserializeObject<StoryInfo>(storyJsons);
-                //StoryInfo? storyinfo = JsonSerializer.Deserialize(storyJsons);
                 response.EnsureSuccessStatusCode();
 
                 if (storyinfo != null)
@@ -39,29 +38,16 @@ namespace ST.DeveloperCoding.HackerNews.API.Controllers
             }
             return await Task.FromResult(stories);
         }
+
+        public async Task<StoryInfo> GetBestStoryAsync(int storyId)
+        {
+            var response = await _httpClient.GetAsync($"{BaseUrl}/item/{storyId}.json");
+            var storyJsons = await response.Content.ReadAsStringAsync();
+            var storyinfo = JsonConvert.DeserializeObject<StoryInfo>(storyJsons);
+            response.EnsureSuccessStatusCode();
+            if (storyinfo == null)
+                storyinfo = new StoryInfo();
+            return await Task.FromResult(storyinfo);
+        }
     }
-
-
-
-    public class StoryInfo
-    {
-
-        public string By { get; set; }
-
-        public int Descendants { get; set; }
-
-        public int Id { get; set; }
-
-        public int[] Kids { get; set; }
-
-        public string Title { get; set; }
-
-        public string? Url { get; set; }
-
-        public string Type { get; set; }
-        //public DateTime Time { get; set; }
-
-        public int Score { get; set; }
-    }
-
 }

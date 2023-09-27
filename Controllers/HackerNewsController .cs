@@ -6,8 +6,10 @@ namespace ST.DeveloperCoding.HackerNews.API.Controllers
     {
         private readonly HackerNewsService _hackerNewsService;
 
-        public HackerNewsController(HackerNewsService hackerNewsService)
+        private readonly ILogger<HackerNewsController> _logger;
+        public HackerNewsController(HackerNewsService hackerNewsService, ILogger<HackerNewsController> logger)
         {
+            _logger = logger;
             _hackerNewsService = hackerNewsService ?? throw new ArgumentNullException(nameof(hackerNewsService));
         }
 
@@ -22,11 +24,29 @@ namespace ST.DeveloperCoding.HackerNews.API.Controllers
                     return Ok(await _hackerNewsService.GetBestStoriesAsync(n));
                 }
 
-                return BadRequest("Invalid value for 'n'");
+                var logMessage = $"Invalid value for 'n' : {n}";
+                _logger.LogWarning(logMessage);
+                return BadRequest(logMessage);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                var logMessage = $"An error occurred: {ex.Message}";
+                _logger.LogWarning(logMessage);
+                return StatusCode(500, logMessage);
+            }
+        }
+
+        public async Task<ActionResult> GetStory(int storyId)
+        {
+            try
+            {
+                return Ok(await _hackerNewsService.GetBestStoryAsync(storyId));
+            }
+            catch (Exception ex)
+            {
+                var logMessage = $"An error occurred: {ex.Message}";
+                _logger.LogWarning(logMessage);
+                return StatusCode(500, logMessage);
             }
         }
     }
